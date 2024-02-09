@@ -1,79 +1,23 @@
 import * as fs from "fs";
-import * as path from "path";
 
-import cliSpinners = require("cli-spinners");
 import { performance } from "perf_hooks";
 
-import excludedFolders from "./src/lib/excludedFolders";
-import { extractSubnetAndProject } from "./src/helpers/extractSubnetAndProject";
+import { searchDockerCompose } from "./src/helpers/searchDockerCompose";
+import { showLoading } from "./src/helpers/showLoader";
 
 interface SubnetInfo {
   projectName: string;
   subnet: string;
 }
 
-// Function to extract subnet values and project names from docker-compose.yml files
-
-// Function to recursively search for docker-compose.yml files
-async function searchDockerCompose(folder: string) {
-  const dockerComposeFiles: string[] = [];
-  let numFilesSearched = 0;
-  let numFoldersSearched = 0;
-
-  async function searchRecursively(currentFolder: string) {
-    numFoldersSearched++;
-    const files = await fs.promises.readdir(currentFolder);
-
-    for (const file of files) {
-      const filePath = path.join(currentFolder, file);
-      const stats = await fs.promises.stat(filePath);
-
-      numFilesSearched++;
-
-      if (stats.isDirectory()) {
-        // Check if the current directory should be excluded
-        const excluded = excludedFolders.some(excludedFolder =>
-          filePath.endsWith(path.sep + excludedFolder)
-        );
-        if (excluded) {
-          continue; // Skip the directory
-        }
-        await searchRecursively(filePath);
-      } else if (file === "docker-compose.yml") {
-        dockerComposeFiles.push(filePath);
-      }
-    }
-  }
-
-  await searchRecursively(folder);
-
-  const results = await Promise.all(
-    dockerComposeFiles.map(extractSubnetAndProject)
-  );
-  return { results, numFilesSearched, numFoldersSearched };
-}
-
-// Function to display a loading spinner
-function showLoading() {
-  const spinner = cliSpinners.bouncingBar;
-  let i = 0;
-  return setInterval(() => {
-    process.stdout.write(
-      `\r${spinner.frames[i]} 🔍️ Searching for the subnets... 🗃️`
-    );
-    i = (i + 1) % spinner.frames.length;
-  }, spinner.interval);
-}
-
 // Main function
-async function main() {
+async function main(folder: any) {
   const args = process.argv.slice(2);
   if (args.length !== 1) {
     console.error("Usage: node script.js <folder>");
     process.exit(1);
   }
 
-  const folder = args[0];
   try {
     const stats = await fs.promises.stat(folder);
     if (!stats.isDirectory()) {
@@ -145,7 +89,9 @@ async function main() {
     // Display metrics
     console.log("\nMetrics:");
     console.table({
-      "Time spent searching: ": `${((endTime - startTime) / 1000).toFixed(2)} seconds`,
+      "Time spent searching: ": `${((endTime - startTime) / 1000).toFixed(
+        2
+      )} seconds`,
       "Number of files searched": `${numFilesSearched} files`,
       "Number of folders searched": `${numFoldersSearched} folders`,
       "Number of matching files found": `${results.length} files`,
@@ -159,4 +105,4 @@ async function main() {
 }
 
 // Run the script
-main();
+main(process.argv.slice(2)[0]);
