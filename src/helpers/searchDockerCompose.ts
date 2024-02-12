@@ -18,9 +18,14 @@ export const searchDockerCompose = async (folder: string) => {
         // Iterate through each file in the current folder
         for (const file of files) {
             const filePath = path.join(currentFolder, file); // Get the full path of the file
-            const stats = await fs.promises.stat(filePath); // Get the file stats
+            const stats = await fs.promises.lstat(filePath); // Get the file stats
 
             numFilesSearched++; // Increment the file counter
+
+            // Check if the current item is a symbolic link
+            if (stats.isSymbolicLink()) {
+                continue; // Skip symbolic links
+            }
 
             // Check if the current item is a directory
             if (stats.isDirectory()) {

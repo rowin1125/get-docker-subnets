@@ -4,7 +4,6 @@ const excludedFolders = [
     "dist",
     ".next",
     ".cache",
-    "node_modules",
     "bin",
     "azure-functions",
     "vendor",

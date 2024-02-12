@@ -30,11 +30,11 @@ intro:
 # Build Image
 build:
 	@echo "Building Docker image..."
-	@docker build -t rowin1125/get-subnets:lastest .
+	@docker build -t rowin1125/get-subnets:latest .
 
 # Push image
 push: build
-	@docker push rowin1125/get-subnets:lastest
+	@docker push rowin1125/get-subnets:latest
 
 ##
 ## Project
