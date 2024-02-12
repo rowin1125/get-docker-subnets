@@ -1,0 +1,73 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "@typescript-eslint",
+    "simple-import-sort",
+    "import",
+    "unused-imports"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "ignorePatterns": [
+    "**/*.gql",
+    "src/services/sanity/codegen/sanitySchema.ts"
+  ],
+  "rules": {
+    "indent": ["error", 4],
+    "no-empty-pattern": "off",
+    "no-multiple-empty-lines": [
+      "error",
+      { "max": 1, "maxBOF": 0, "maxEOF": 0 }
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "react/react-in-jsx-scope": 0,
+    "unused-imports/no-unused-imports": "error",
+    "simple-import-sort/imports": [
+      "error",
+      {
+        "groups": [
+          // React
+          ["^(react|react-dom)$"],
+          // other packages. Node packages first
+          [
+            "^(assert|buffer|child_process|cluster|console|constants|crypto|dgram|dns|domain|events|fs|http|https|module|net|os|path|punycode|querystring|readline|repl|stream|string_decoder|sys|timers|tls|tty|url|util|vm|zlib|freelist|v8|process|async_hooks|http2|perf_hooks)(/.*|$)",
+            "^@?\\w"
+          ],
+          // Internal packages, parent imports, other relative imports
+          [
+            "^(components|hooks|helpers|services|images|localization|pages|scss|state)(/.*|$)",
+            "^\\.\\.(?!/?$)",
+            "^\\.\\./?$",
+            "^\\./(?=.*/)(?!/?$)",
+            "^\\.(?!/?$)",
+            "^\\./?$"
+          ],
+          // Side effects and Style imports.
+          ["^\\u0000", "^.+\\.s?css$"]
+        ]
+      }
+    ]
+  }
+}
